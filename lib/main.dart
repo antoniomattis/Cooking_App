@@ -1,12 +1,17 @@
 
 
+import 'package:provider/provider.dart';
+
 import './dummy_data.dart';
 import './screens/filters_screen.dart';
 import './screens/meal_detail_screen.dart';
 import './screens/tabs_screen.dart';
 import 'package:flutter/material.dart';
 
+
+
 import 'models/meal.dart';
+import 'provider/favorite_provider.dart';
 import 'screens/Categories_Screen.dart';
 import 'screens/catergory_meals_screen.dart';
 import 'screens/meal_detail_screen.dart';
@@ -31,7 +36,7 @@ class _MyAppState extends State<MyApp> {
 
   void _setFilters(Map<String, bool> filterData) {
     setState(() {
-      _filters = filterData; //stores get changes from filter_screen
+      _filters = filterData; //stores changes from filter_screen
 
       _availableMeals = DUMMY_MEALS.where((meal) {
         if (_filters['gluten'] && !meal.isGlutenFree) {
@@ -73,40 +78,43 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'DeliMeals',
-      theme: ThemeData(
-        primarySwatch: Colors.pink,
-        accentColor: Colors.amber,
-        canvasColor: Color.fromRGBO(255, 254, 229, 1),
-        fontFamily: 'Raleway',
-        textTheme: ThemeData.light().textTheme.copyWith(
-              bodyText1: TextStyle(
-                color: Color.fromRGBO(20, 51, 51, 1),
+    return ChangeNotifierProvider(
+          create: (ctx) => Favorites(),
+          child: MaterialApp(
+        title: 'DeliMeals',
+        theme: ThemeData(
+          primarySwatch: Colors.pink,
+          accentColor: Colors.amber,
+          canvasColor: Color.fromRGBO(255, 254, 229, 1),
+          fontFamily: 'Raleway',
+          textTheme: ThemeData.light().textTheme.copyWith(
+                bodyText1: TextStyle(
+                  color: Color.fromRGBO(20, 51, 51, 1),
+                ),
+                bodyText2: TextStyle(
+                  color: Color.fromRGBO(20, 51, 51, 1),
+                ),
+                headline6: TextStyle(
+                  fontSize: 24,
+                  fontFamily: 'RobotoCondensed',
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              bodyText2: TextStyle(
-                color: Color.fromRGBO(20, 51, 51, 1),
-              ),
-              headline6: TextStyle(
-                fontSize: 24,
-                fontFamily: 'RobotoCondensed',
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+        ),
+        home: TabsSrceen(_favoriteMeals),
+        routes: {
+          CategoryMealsScreen.routeName: (ctx) =>
+              CategoryMealsScreen(_availableMeals),
+          MealDetailScreen.routeName: (ctx) => MealDetailScreen(_toggleFavorites, _isMealFavorite),
+          FiltersScreen.routeName: (ctx) => FiltersScreen(_filters, _setFilters),
+        },
+        onGenerateRoute: (settings) {
+          print(settings.arguments);
+          return MaterialPageRoute(
+            builder: (ctx) => CategoriesScreen(),
+          );
+        },
       ),
-      home: TabsSrceen(_favoriteMeals),
-      routes: {
-        CategoryMealsScreen.routeName: (ctx) =>
-            CategoryMealsScreen(_availableMeals),
-        MealDetailScreen.routeName: (ctx) => MealDetailScreen(_toggleFavorites, _isMealFavorite),
-        FiltersScreen.routeName: (ctx) => FiltersScreen(_filters, _setFilters),
-      },
-      onGenerateRoute: (settings) {
-        print(settings.arguments);
-        return MaterialPageRoute(
-          builder: (ctx) => CategoriesScreen(),
-        );
-      },
     );
   }
 }
