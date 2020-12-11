@@ -15,7 +15,7 @@ class CategoriesScreen extends StatelessWidget {
               catData.title,
               catData.color,
             ),
-          )
+          )//change
           .toList(),
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 200,
